@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="theme-color" content="#0a0a0a"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+<meta name="apple-mobile-web-app-title" content="NEXUS"/>
+<title>NEXUS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:   #0a0a0a;
+  --bg1:  #101010;
+  --bg2:  #151515;
+  --bg3:  #1a1a1a;
+  --line: #222;
+  --l2:   #2a2a2a;
+  --t0:   #efefef;
+  --t1:   #808080;
+  --t2:   #3a3a3a;
+  --acc:  #6c5ce7;
+  --ac2:  #a29bfe;
+  --grn:  #00b894;
+  --red:  #d63031;
+  --amb:  #c8960c;
+  --mono: 'Space Mono', monospace;
+  --sans: 'Outfit', sans-serif;
+  --sw:   210px;
+  --th:   52px;
+  --bnh:  58px;
+  --sb:   env(safe-area-inset-bottom,0px);
+  --r:    8px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--t0);font-family:var(--sans);overflow:hidden;-webkit-tap-highlight-color:transparent}
+button{cursor:pointer;font-family:var(--sans)}
+input,select,textarea{font-family:var(--sans)}
+a{color:var(--ac2);text-decoration:none}
+
+/* ── LAYOUT ── */
+#app{display:flex;height:100%}
+
+/* ── SIDEBAR ── */
+#sidebar{width:var(--sw);height:100%;background:var(--bg1);border-right:1px solid var(--line);display:flex;flex-direction:column;flex-shrink:0}
+.s-logo{padding:20px 18px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:9px}
+.s-mark{width:26px;height:26px;background:var(--acc);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.s-wordmark{font-size:14px;font-weight:700;letter-spacing:.08em;color:var(--t0)}
+.s-tagline{font-size:9px;color:var(--t2);letter-spacing:.06em;margin-top:1px}
+.s-nav{flex:1;padding:8px 6px;overflow-y:auto}
+.s-btn{width:100%;display:flex;align-items:center;gap:8px;padding:8px 11px;background:none;border:none;color:var(--t2);font-size:12px;font-weight:400;border-radius:6px;margin-bottom:1px;transition:color .1s,background .1s;text-align:left}
+.s-btn:hover{background:var(--bg2);color:var(--t1)}
+.s-btn.on{background:var(--bg3);color:var(--t0)}
+.s-icon{font-size:14px;width:18px;text-align:center;flex-shrink:0;opacity:.6}
+.s-btn.on .s-icon{opacity:1}
+.s-badge{margin-left:auto;background:var(--amb);color:#000;font-size:8px;font-weight:700;font-family:var(--mono);padding:1px 5px;border-radius:20px}
+.s-badge.r{background:var(--red);color:#fff}
+.s-foot{padding:10px 16px 16px;border-top:1px solid var(--line)}
+.s-sync{display:flex;align-items:center;gap:5px;font-size:9px;color:var(--t2);font-family:var(--mono)}
+.s-dot{width:5px;height:5px;border-radius:50%;background:var(--t2);transition:all .3s;flex-shrink:0}
+.s-dot.live{background:var(--grn);box-shadow:0 0 5px var(--grn)}
+.s-dot.saving{background:var(--amb)}
+.s-dot.err{background:var(--red)}
+/* NEXUS avatar in sidebar */
+.s-nexus{padding:12px 14px;margin:6px;background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);cursor:pointer;transition:border-color .15s}
+.s-nexus:hover{border-color:var(--l2)}
+.s-nexus-row{display:flex;align-items:center;gap:8px}
+.s-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--ac2));display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;position:relative}
+.s-av-ring{position:absolute;inset:-2px;border-radius:50%;border:1.5px solid var(--acc);opacity:0;transition:opacity .3s}
+.s-av-ring.pulse{opacity:1;animation:ring-pulse 2s ease-in-out infinite}
+@keyframes ring-pulse{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
+.s-nexus-name{font-size:11px;font-weight:600;color:var(--t0)}
+.s-nexus-status{font-size:9px;color:var(--t2);font-family:var(--mono)}
+.s-nexus-hint{font-size:9px;color:var(--t2);margin-top:5px;line-height:1.5}
+
+/* ── MAIN ── */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+#topbar{height:var(--th);background:var(--bg1);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 18px;gap:9px;flex-shrink:0}
+.t-title{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--t1);flex:1}
+.chip{padding:3px 8px;border-radius:20px;font-size:9px;font-family:var(--mono);border:1px solid}
+.chip-red{background:#d6303110;color:var(--red);border-color:#d6303130}
+.chip-amb{background:#c8960c10;color:var(--amb);border-color:#c8960c30}
+.chip-dim{background:transparent;color:var(--t2);border-color:var(--line)}
+.chip-grn{background:#00b89410;color:var(--grn);border-color:#00b89430}
+.chip-warn{background:#c8960c10;color:var(--amb);border-color:#c8960c30;cursor:pointer}
+#content{flex:1;overflow-y:auto;padding:20px 18px}
+
+/* ── BOTTOM NAV ── */
+#bnav{display:none;position:fixed;bottom:0;left:0;right:0;height:calc(var(--bnh) + var(--sb));background:var(--bg1);border-top:1px solid var(--line);padding-bottom:var(--sb);z-index:100}
+.bn-items{display:flex;height:var(--bnh)}
+.bn-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:none;border:none;color:var(--t2);font-size:8px;font-family:var(--mono);transition:color .1s;position:relative}
+.bn-btn.on{color:var(--t0)}
+.bn-icon{font-size:16px}
+.bn-dot{position:absolute;top:8px;right:calc(50% - 12px);width:5px;height:5px;border-radius:50%;background:var(--red);display:none}
+.bn-dot.show{display:block}
+
+/* ── FLOATING NEXUS BUTTON ── */
+#nx-fab{
+  position:fixed;bottom:80px;right:22px;z-index:200;
+  width:50px;height:50px;border-radius:50%;
+  background:linear-gradient(135deg,var(--acc),var(--ac2));
+  border:none;display:flex;align-items:center;justify-content:center;
+  font-size:20px;box-shadow:0 4px 20px rgba(108,92,231,.4);
+  transition:transform .2s,box-shadow .2s;
+}
+#nx-fab:hover{transform:scale(1.06);box-shadow:0 6px 28px rgba(108,92,231,.55)}
+#nx-fab.open{transform:scale(.92)}
+.nx-fab-ring{position:absolute;inset:-3px;border-radius:50%;border:1.5px solid var(--ac2);opacity:0;animation:ring-pulse 3s ease-in-out infinite}
+@media(max-width:768px){#nx-fab{bottom:calc(var(--bnh) + var(--sb) + 14px)}}
+
+/* ── NEXUS PANEL (slide-up chat) ── */
+#nx-panel{
+  position:fixed;bottom:0;right:0;left:0;z-index:300;
+  height:0;overflow:hidden;
+  transition:height .3s cubic-bezier(.4,0,.2,1);
+}
+#nx-panel.open{height:520px}
+@media(max-width:768px){#nx-panel.open{height:88vh}}
+.nx-inner{
+  position:absolute;bottom:0;left:0;right:0;height:520px;
+  background:var(--bg1);border-top:1px solid var(--l2);
+  display:flex;flex-direction:column;
+  box-shadow:0 -8px 40px rgba(0,0,0,.5);
+}
+@media(max-width:768px){.nx-inner{height:88vh}}
+.nx-header{
+  display:flex;align-items:center;gap:10px;
+  padding:13px 16px;border-bottom:1px solid var(--line);flex-shrink:0;
+}
+.nx-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--ac2));display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;position:relative}
+.nx-av-ring{position:absolute;inset:-2px;border-radius:50%;border:1.5px solid var(--acc);animation:ring-pulse 2s ease-in-out infinite}
+.nx-name{font-size:13px;font-weight:600;color:var(--t0)}
+.nx-sub{font-size:10px;color:var(--t2);font-family:var(--mono)}
+.nx-close{margin-left:auto;background:none;border:none;color:var(--t2);font-size:18px;padding:2px 6px;border-radius:5px;transition:color .1s}
+.nx-close:hover{color:var(--t0)}
+.nx-memory-bar{padding:7px 14px;background:var(--bg2);border-bottom:1px solid var(--line);font-size:9px;color:var(--t2);font-family:var(--mono);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.nx-mem-dot{width:5px;height:5px;border-radius:50%;background:var(--grn);flex-shrink:0}
+.nx-msgs{flex:1;overflow-y:auto;padding:12px 14px}
+.nx-msg{display:flex;gap:8px;margin-bottom:10px;align-items:flex-start}
+.nx-msg.u{flex-direction:row-reverse}
+.nx-bub{max-width:80%;border-radius:9px;padding:9px 12px;font-size:12px;line-height:1.75;white-space:pre-wrap;word-break:break-word}
+.nx-bub.bot{background:var(--bg3);border:1px solid var(--line);color:var(--t0);border-top-left-radius:2px}
+.nx-bub.usr{background:var(--acc);color:#fff;border-top-right-radius:2px}
+.nx-bub .mem-saved{font-size:9px;font-family:var(--mono);color:var(--grn);margin-top:5px;opacity:.8}
+.nx-thinking{display:flex;gap:4px;align-items:center;padding:12px}
+.nx-dot-1,.nx-dot-2,.nx-dot-3{width:5px;height:5px;border-radius:50%;background:var(--t2);animation:thinking .8s ease-in-out infinite}
+.nx-dot-2{animation-delay:.15s}
+.nx-dot-3{animation-delay:.3s}
+@keyframes thinking{0%,80%,100%{transform:scale(.8);opacity:.4}40%{transform:scale(1.2);opacity:1}}
+.nx-chips{padding:0 12px 8px;display:flex;gap:5px;flex-wrap:wrap;flex-shrink:0}
+.nx-chip{background:transparent;border:1px solid var(--line);color:var(--t2);border-radius:20px;padding:4px 9px;font-size:9px;transition:all .1s}
+.nx-chip:hover{border-color:var(--acc);color:var(--t0)}
+.nx-input-row{display:flex;gap:7px;padding:10px 12px;border-top:1px solid var(--line);flex-shrink:0}
+.nx-inp{flex:1;background:var(--bg2);border:1px solid var(--l2);color:var(--t0);border-radius:7px;padding:9px 12px;font-size:12px;outline:none;transition:border-color .15s}
+.nx-inp:focus{border-color:var(--acc)}
+.nx-inp::placeholder{color:var(--t2)}
+.nx-send{background:var(--acc);border:none;color:#fff;border-radius:7px;padding:9px 14px;font-size:13px;transition:opacity .1s}
+.nx-send:hover{opacity:.85}
+.nx-send:disabled{opacity:.35;cursor:not-allowed}
+.nx-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:299;opacity:0;pointer-events:none;transition:opacity .3s}
+.nx-overlay.show{opacity:1;pointer-events:all}
+
+/* ── CARDS ── */
+.card{background:var(--bg1);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.card+.card{margin-top:8px}
+.card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.card-lbl{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--t2);font-family:var(--mono)}
+.card-act{background:none;border:none;color:var(--acc);font-size:10px;font-family:var(--mono);padding:0}
+
+/* ── GREETING CARD ── */
+.greet-card{background:var(--bg1);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:8px;position:relative;overflow:hidden}
+.greet-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--acc),transparent);opacity:.4}
+.greet-time{font-size:10px;color:var(--t2);font-family:var(--mono);margin-bottom:5px}
+.greet-text{font-size:17px;font-weight:600;color:var(--t0);margin-bottom:8px;line-height:1.4}
+.greet-briefing{font-size:12px;color:var(--t1);line-height:1.8;border-top:1px solid var(--line);padding-top:10px;margin-top:10px;white-space:pre-wrap}
+
+/* ── STATS ── */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px}
+.stat-box{background:var(--bg1);border:1px solid var(--line);border-radius:var(--r);padding:14px 10px;text-align:center}
+.stat-n{font-family:var(--mono);font-size:26px;font-weight:700;color:var(--t0)}
+.stat-l{font-size:8px;color:var(--t2);margin-top:2px;letter-spacing:.14em;text-transform:uppercase}
+
+/* ── ROWS ── */
+.arow{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid var(--line)}
+.arow:last-child{border-bottom:none}
+.pdot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.atitle{font-size:12px;color:var(--t0);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.atitle.done{text-decoration:line-through;color:var(--t2)}
+.ameta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.stag{font-size:8px;padding:1px 6px;border-radius:20px;font-weight:700;font-family:var(--mono)}
+.adue{font-size:9px;color:var(--t2);font-family:var(--mono)}
+.adue.ov{color:var(--red)}
+
+/* ── AI INSIGHT PILL (on assignments) ── */
+.ai-insight{display:inline-flex;align-items:center;gap:4px;font-size:9px;color:var(--acc);border:1px solid var(--acc)30;border-radius:20px;padding:2px 7px;cursor:pointer;background:var(--acc)08;transition:all .15s;font-family:var(--mono)}
+.ai-insight:hover{background:var(--acc)18;border-color:var(--acc)60}
+
+/* ── PROGRESS ── */
+.prog-bar{height:2px;background:var(--bg3);border-radius:2px;overflow:hidden;margin-top:5px}
+.prog-fill{height:100%;background:var(--acc);border-radius:2px;transition:width .5s}
+
+/* ── FORM ── */
+.f-inp{background:var(--bg2);border:1px solid var(--l2);color:var(--t0);border-radius:6px;padding:8px 11px;font-size:12px;outline:none;transition:border-color .15s;width:100%}
+.f-inp:focus{border-color:var(--acc)}
+.f-inp::placeholder{color:var(--t2)}
+.f-row{display:flex;gap:7px;margin-top:7px;flex-wrap:wrap}
+.f-sm{width:auto;flex:1;min-width:100px}
+input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.3)}
+
+/* ── BUTTONS ── */
+.btn{background:var(--acc);border:none;color:#fff;border-radius:6px;padding:7px 14px;font-size:11px;font-weight:500;transition:opacity .15s}
+.btn:hover{opacity:.85}
+.btn.ghost{background:transparent;border:1px solid var(--l2);color:var(--t1)}
+.btn.ghost:hover{border-color:var(--line);color:var(--t0)}
+.btn.danger{background:#d6303110;border:1px solid #d6303130;color:var(--red)}
+.btn.danger:hover{background:#d6303120}
+.btn.green{background:#00b89414;border:1px solid #00b89440;color:var(--grn)}
+.btn.green:hover{background:#00b89424}
+
+/* ── FILTER TABS ── */
+.ftabs{display:flex;gap:4px;flex-wrap:wrap}
+.ftab{background:transparent;border:1px solid var(--line);color:var(--t2);border-radius:20px;padding:3px 10px;font-size:10px;transition:all .12s}
+.ftab.on{border-color:var(--acc);color:var(--t0);background:var(--bg3)}
+
+/* ── TOGGLE ── */
+.tog{width:36px;height:20px;border-radius:10px;background:var(--bg3);position:relative;transition:background .2s;border:1px solid var(--l2);flex-shrink:0}
+.tog.on{background:var(--grn);border-color:var(--grn)}
+.tog-t{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.tog.on .tog-t{transform:translateX(16px)}
+
+/* ── DEVICES ── */
+.dev-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.dev-card{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);padding:14px 12px;cursor:pointer;transition:border-color .15s;display:flex;flex-direction:column;gap:3px}
+.dev-card:hover{border-color:var(--l2)}
+.dev-em{font-size:22px;margin-bottom:3px}
+.dev-nm{font-size:11px;font-weight:500;color:var(--t0)}
+.dev-ds{font-size:9px;color:var(--t2);margin-bottom:6px}
+.scene-row{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.scene-btn{flex:1;min-width:80px;background:var(--bg2);border:1px solid var(--line);color:var(--t1);border-radius:var(--r);padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;transition:all .15s}
+.scene-btn:hover{border-color:var(--l2);color:var(--t0)}
+.thermo-row{display:flex;align-items:center;gap:8px;margin-top:6px}
+.thermo-btn{width:26px;height:26px;background:var(--bg3);border:1px solid var(--line);color:var(--t1);font-size:14px;border-radius:5px;display:flex;align-items:center;justify-content:center;transition:color .12s}
+.thermo-btn:hover{color:var(--t0)}
+.thermo-v{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--amb);min-width:52px;text-align:center}
+
+/* ── POMO ── */
+.pom-wrap{display:flex;flex-direction:column;align-items:center;padding-top:6px}
+.pom-tabs{display:flex;gap:5px;margin-bottom:24px}
+.pom-tab{background:transparent;border:1px solid var(--line);color:var(--t2);border-radius:20px;padding:5px 16px;font-size:10px;font-family:var(--mono);transition:all .15s}
+.pom-tab.on{border-color:var(--acc);color:var(--t0)}
+.ring-wrap{position:relative;width:180px;height:180px;display:flex;align-items:center;justify-content:center;margin-bottom:20px}
+.ring-svg{position:absolute;top:0;left:0;transform:rotate(-90deg)}
+.ring-time{font-family:var(--mono);font-size:36px;font-weight:700;color:var(--t0);text-align:center}
+.ring-lbl{font-size:8px;color:var(--t2);letter-spacing:.2em;text-transform:uppercase;margin-top:2px;text-align:center;font-family:var(--mono)}
+.pom-ctrl{display:flex;gap:10px;margin-bottom:16px}
+.pom-btn{width:40px;height:40px;border-radius:8px;background:var(--bg2);border:1px solid var(--line);color:var(--t1);font-size:15px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.pom-btn.main{width:52px;height:52px;border-radius:11px;font-size:19px;border:none;background:var(--acc);color:#fff}
+.pom-tip{font-size:9px;color:var(--t2);border:1px solid var(--line);border-radius:20px;padding:3px 9px}
+
+/* ── CHAT (AI page) ── */
+.chat-wrap{display:flex;flex-direction:column;height:100%}
+.chat-notice{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);padding:11px 13px;margin-bottom:10px;font-size:11px;color:var(--t1);line-height:1.7}
+.chat-msgs{flex:1;overflow-y:auto;padding-bottom:10px;min-height:0}
+.cmsg{display:flex;gap:8px;margin-bottom:10px;align-items:flex-start}
+.cmsg.u{flex-direction:row-reverse}
+.cav{width:26px;height:26px;flex-shrink:0;background:linear-gradient(135deg,var(--acc),var(--ac2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px}
+.cbub{max-width:78%;border-radius:9px;padding:9px 12px;font-size:12px;line-height:1.75;white-space:pre-wrap;word-break:break-word}
+.cbub.bot{background:var(--bg2);border:1px solid var(--line);color:var(--t0);border-top-left-radius:2px}
+.cbub.usr{background:var(--acc);color:#fff;border-top-right-radius:2px}
+.tdots{letter-spacing:4px;animation:td .8s infinite}
+@keyframes td{0%,100%{opacity:.2}50%{opacity:1}}
+.qchips{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:9px}
+.qchip{background:transparent;border:1px solid var(--line);color:var(--t2);border-radius:20px;padding:3px 9px;font-size:9px;transition:all .12s}
+.qchip:hover{border-color:var(--acc);color:var(--t0)}
+.cinput-row{display:flex;gap:6px}
+.cinput{flex:1;background:var(--bg2);border:1px solid var(--l2);color:var(--t0);border-radius:7px;padding:10px 13px;font-size:12px;outline:none;transition:border-color .15s}
+.cinput:focus{border-color:var(--acc)}
+.csend{background:var(--acc);border:none;color:#fff;border-radius:7px;padding:10px 14px;font-size:12px}
+.csend:disabled{opacity:.35;cursor:not-allowed}
+
+/* ── NOTES ── */
+.notes-ta{width:100%;min-height:calc(100vh - 150px);background:var(--bg1);border:1px solid var(--line);color:var(--t0);border-radius:var(--r);padding:16px;font-size:13px;font-family:var(--sans);line-height:1.9;resize:none;outline:none;transition:border-color .15s}
+.notes-ta:focus{border-color:var(--acc)}
+.notes-ta::placeholder{color:var(--t2)}
+
+/* ── SETTINGS ── */
+.s-sec{margin-bottom:20px}
+.s-sec-lbl{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--t2);font-family:var(--mono);margin-bottom:7px}
+.s-row{background:var(--bg1);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:11px}
+.s-info{flex:1}
+.s-row-lbl{font-size:12px;color:var(--t0);margin-bottom:1px}
+.s-row-desc{font-size:9px;color:var(--t2)}
+#import-file{display:none}
+.import-lbl{background:transparent;border:1px solid var(--l2);color:var(--t1);border-radius:6px;padding:7px 14px;font-size:11px;cursor:pointer;display:inline-block;transition:all .15s}
+.import-lbl:hover{border-color:var(--line);color:var(--t0)}
+
+/* ── MEMORY PANEL (in settings) ── */
+.mem-tag{display:inline-flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--l2);border-radius:20px;padding:4px 10px;font-size:10px;color:var(--t1);margin:3px}
+.mem-del{background:none;border:none;color:var(--t2);font-size:11px;cursor:pointer;padding:0 0 0 4px;line-height:1}
+.mem-del:hover{color:var(--red)}
+
+/* ── SPOTIFY ── */
+.sp-player{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin-bottom:8px}
+.sp-track{display:flex;align-items:center;gap:11px;margin-bottom:12px}
+.sp-art{width:44px;height:44px;border-radius:5px;background:var(--bg3);object-fit:cover;flex-shrink:0}
+.sp-ph{width:44px;height:44px;border-radius:5px;background:var(--bg3);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.sp-nm{font-size:12px;font-weight:500;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sp-ar{font-size:10px;color:var(--t2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sp-ctrl{display:flex;align-items:center;justify-content:center;gap:9px;margin-bottom:10px}
+.sp-btn{width:32px;height:32px;border-radius:50%;background:transparent;border:1px solid var(--line);color:var(--t1);font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.sp-btn:hover{border-color:var(--l2);color:var(--t0)}
+.sp-btn.main{width:40px;height:40px;background:var(--grn);border-color:var(--grn);color:#fff;font-size:14px}
+.sp-prog{height:2px;background:var(--bg3);border-radius:2px;overflow:hidden;margin-bottom:9px;cursor:pointer}
+.sp-pf{height:100%;background:var(--grn);border-radius:2px;transition:width .5s linear}
+.sp-vol-row{display:flex;align-items:center;gap:7px}
+.sp-vol{flex:1;-webkit-appearance:none;height:2px;border-radius:2px;background:var(--bg3);outline:none}
+.sp-vol::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;border-radius:50%;background:var(--t0);cursor:pointer}
+.sp-pl-item{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.sp-pl-item:last-child{border-bottom:none}
+.sp-pl-item:hover .sp-pl-nm{color:var(--grn)}
+.sp-pl-img{width:32px;height:32px;border-radius:4px;background:var(--bg3);object-fit:cover;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px}
+.sp-pl-nm{font-size:11px;color:var(--t0)}
+.sp-pl-ct{font-size:9px;color:var(--t2);font-family:var(--mono);margin-top:1px}
+
+/* ── BRIEFING ── */
+.brief-hd{margin-bottom:18px}
+.brief-gr{font-size:20px;font-weight:600;color:var(--t0);margin-bottom:2px}
+.brief-dt{font-size:10px;color:var(--t2);font-family:var(--mono)}
+.brief-ai{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;margin-bottom:8px;font-size:12px;color:var(--t1);line-height:1.85}
+
+/* ── SETUP ── */
+#setup{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+.su-box{max-width:500px;width:100%}
+.su-mark{width:32px;height:32px;background:var(--acc);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:16px}
+.su-h{font-size:18px;font-weight:600;color:var(--t0);margin-bottom:4px}
+.su-sub{font-size:11px;color:var(--t1);line-height:1.7;margin-bottom:18px}
+.su-step{display:flex;gap:9px;margin-bottom:10px;font-size:10px;color:var(--t1);line-height:1.7}
+.su-n{width:18px;height:18px;border-radius:50%;background:var(--acc);color:#fff;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;flex-shrink:0;margin-top:2px}
+.su-ta{width:100%;height:110px;background:var(--bg2);border:1px solid var(--l2);color:var(--t0);border-radius:var(--r);padding:11px;font-size:10px;font-family:var(--mono);resize:none;outline:none;line-height:1.7;transition:border-color .2s;margin-top:14px}
+.su-ta:focus{border-color:var(--acc)}
+.su-ta::placeholder{color:var(--t2)}
+.su-err{font-size:10px;color:var(--red);margin-top:7px;padding:8px 11px;background:#d6303110;border:1px solid #d6303130;border-radius:6px;display:none;line-height:1.6}
+.su-btns{display:flex;gap:8px;margin-top:10px}
+.su-go{flex:1;background:var(--acc);border:none;color:#fff;border-radius:var(--r);padding:10px;font-size:12px;font-weight:500;transition:opacity .15s}
+.su-go:hover{opacity:.85}
+.su-go:disabled{opacity:.4;cursor:not-allowed}
+.su-skip{flex:1;background:transparent;border:1px solid var(--l2);color:var(--t1);border-radius:var(--r);padding:10px;font-size:12px;transition:all .15s}
+.su-skip:hover{border-color:var(--line);color:var(--t0)}
+
+/* ── MISC ── */
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:3px}
+.empty{text-align:center;padding:28px 0;font-size:11px;color:var(--t2)}
+@keyframes fadein{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.fi{animation:fadein .18s ease}
+#toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--bg3);border:1px solid var(--l2);color:var(--t1);padding:6px 14px;border-radius:20px;font-size:10px;font-family:var(--mono);pointer-events:none;opacity:0;transition:all .22s;z-index:9999;white-space:nowrap}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(max-width:768px){
+  #sidebar{display:none}
+  #bnav{display:block}
+  #content{padding:14px;padding-bottom:calc(var(--bnh) + var(--sb) + 14px)}
+  #topbar{padding:0 12px}
+  .stat-row{grid-template-columns:1fr 1fr}
+  .dev-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:480px){
+  .stat-n{font-size:22px}
+  .f-row{flex-direction:column}
+  .f-sm{width:100%}
+}
+</style>
+</head>
+<body>
+
+<!-- Setup -->
+<div id="setup">
+  <div class="su-box fi">
+    <div class="su-mark">⚡</div>
+    <div class="su-h">Connect Firebase</div>
+    <div class="su-sub">Paste your config to sync across all your devices. Your data lives in your own Firebase project.</div>
+    <div class="su-step"><div class="su-n">1</div><div>Go to <strong style="color:var(--t0)">console.firebase.google.com</strong> → Create a project</div></div>
+    <div class="su-step"><div class="su-n">2</div><div><strong style="color:var(--t0)">Build → Realtime Database → Create → Start in test mode</strong></div></div>
+    <div class="su-step"><div class="su-n">3</div><div><strong style="color:var(--t0)">Project Settings ⚙ → Your apps → Web → Register</strong> → copy the <code style="color:var(--ac2)">firebaseConfig</code> and paste below</div></div>
+    <textarea class="su-ta" id="fb-inp" placeholder='{
+  apiKey: "AIzaSy...",
+  databaseURL: "https://your-app-default-rtdb.firebaseio.com",
+  projectId: "your-app", ...
+}'></textarea>
+    <div class="su-err" id="su-err"></div>
+    <div class="su-btns">
+      <button class="su-skip" onclick="skipSetup()">Skip — local only</button>
+      <button class="su-go" id="su-btn" onclick="connectFB()">Connect & Sync</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- Nexus overlay -->
+<div id="nx-overlay" class="nx-overlay" onclick="closeNX()"></div>
+
+<!-- Nexus panel -->
+<div id="nx-panel">
+  <div class="nx-inner">
+    <div class="nx-header">
+      <div class="nx-av"><div class="nx-av-ring"></div>◎</div>
+      <div><div class="nx-name">NEXUS</div><div class="nx-sub" id="nx-status">Online — ready</div></div>
+      <button class="nx-close" onclick="closeNX()">✕</button>
+    </div>
+    <div class="nx-memory-bar">
+      <div class="nx-mem-dot"></div>
+      <span id="nx-mem-count">Loading memory...</span>
+      <button style="margin-left:auto;background:none;border:none;color:var(--t2);font-size:9px;cursor:pointer;font-family:var(--mono)" onclick="nav('settings');closeNX()">manage →</button>
+    </div>
+    <div class="nx-msgs" id="nx-msgs"></div>
+    <div class="nx-chips" id="nx-chips"></div>
+    <div class="nx-input-row">
+      <input class="nx-inp" id="nx-inp" placeholder="Ask NEXUS anything, Michael..." onkeydown="if(event.key==='Enter')sendNX()"/>
+      <button class="nx-send" id="nx-send" onclick="sendNX()">▶</button>
+    </div>
+  </div>
+</div>
+
+<!-- FAB -->
+<button id="nx-fab" onclick="toggleNX()" title="Ask NEXUS">
+  <div class="nx-fab-ring"></div>
+  ◎
+</button>
+
+<!-- App -->
+<div id="app" style="visibility:hidden">
+  <nav id="sidebar">
+    <div class="s-logo">
+      <div class="s-mark">⚡</div>
+      <div><div class="s-wordmark">NEXUS</div><div class="s-tagline">PERSONAL ASSISTANT</div></div>
+    </div>
+    <!-- NEXUS avatar widget -->
+    <div class="s-nexus" onclick="toggleNX()">
+      <div class="s-nexus-row">
+        <div class="s-av"><div class="s-av-ring pulse"></div>◎</div>
+        <div><div class="s-nexus-name">NEXUS</div><div class="s-nexus-status" id="s-nx-status">Online</div></div>
+      </div>
+      <div class="s-nexus-hint" id="s-nx-hint">Tap to ask me anything, Michael.</div>
+    </div>
+    <div class="s-nav" id="s-nav"></div>
+    <div class="s-foot">
+      <div class="s-sync"><div class="s-dot" id="s-dot"></div><span id="s-lbl">—</span></div>
+    </div>
+  </nav>
+  <div id="main">
+    <div id="topbar">
+      <div class="t-title" id="t-title"></div>
+      <div id="t-chips"></div>
+    </div>
+    <div id="content"></div>
+  </div>
+</div>
+<div id="bnav"><div class="bn-items" id="bn-items"></div></div>
+
+<script>
+// ── CONFIG ─────────────────────────────────────────────────────────────────────
+var USER = 'Michael';
+var NEXUS_NAME = 'NEXUS';
+
+var PAGES = [
+  {id:'dashboard', icon:'◈', label:'Dashboard'},
+  {id:'briefing',  icon:'🌅', label:'Briefing'},
+  {id:'assignments',icon:'✦', label:'Assignments'},
+  {id:'ai',        icon:'◎', label:'AI'},
+  {id:'music',     icon:'♫', label:'Music'},
+  {id:'smarthome', icon:'⌘', label:'Home'},
+  {id:'pomodoro',  icon:'◷', label:'Timer'},
+  {id:'notes',     icon:'◻', label:'Notes'},
+  {id:'settings',  icon:'⚙', label:'Settings'},
+];
+
+var SUBJECTS = ['Math','Science','Biology','History','English','Computer Science','Art','PE','Other'];
+var PC = {high:'#d63031',medium:'#c8960c',low:'#00b894'};
+var SC = {Math:'#6c5ce7',Science:'#00cec9',Biology:'#00b894',History:'#e17055',English:'#0984e3','Computer Science':'#a29bfe',Art:'#e84393',PE:'#fdcb6e',Other:'#636e72'};
+var LK='nexus_v6', FK='nexus_fb6', MK='nexus_memory', SP='nexus/data';
+
+var DEF = {
+  assignments:[
+    {id:1,title:'Biology Lab Report',subject:'Biology',due:'2026-03-25',priority:'high',done:false},
+    {id:2,title:'Algebra Chapter 7 HW',subject:'Math',due:'2026-03-23',priority:'medium',done:false},
+    {id:3,title:'History Essay Draft',subject:'History',due:'2026-03-28',priority:'low',done:false},
+  ],
+  notes:'', nightlyTime:'21:00',
+  smartHome:{mainLight:true,deskLamp:true,fan:false,thermostat:70,doNotDisturb:false},
+  apiKey:'', spotifyClientId:'', spotifyToken:'', spotifyExpiry:0
+};
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+var S = JSON.parse(localStorage.getItem(LK)||'null') || dc(DEF);
+var memory = JSON.parse(localStorage.getItem(MK)||'[]'); // array of {text, ts} objects
+var page = 'dashboard';
+var fbUrl=null, pollInt=null, lastTs=0, ignRem=false, saveTmr=null, fbConn=false;
+var pomPhase='work',pomSecs=25*60,pomRun=false,pomCyc=0,pomInt=null;
+var chatMsgs=[{role:'assistant',content:'Good to have you back, '+USER+'. I\'m ready when you are. What can I help you with?'}];
+var aiLoad=false;
+var nxMsgs=[{role:'assistant',content:'Good to have you back, '+USER+'. I\'m online and ready. What do you need?'}];
+var nxLoad=false, nxOpen=false;
+var aFilter='all',formOpen=false;
+var briefText='',briefLoad=false,briefDate='',nightlyTmr=null;
+var spTrack=null,spPlaying=false,spVol=50,spPos=0,spDur=1,spLists=[],spPollInt=null;
+
+function dc(o){return JSON.parse(JSON.stringify(o));}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
+function fd(d){return new Date(d+'T12:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});}
+function isOv(d){return new Date(d+'T23:59')<new Date();}
+function toast(m){var e=document.getElementById('toast');e.textContent=m;e.classList.add('show');setTimeout(function(){e.classList.remove('show');},2000);}
+
+// ── MEMORY ─────────────────────────────────────────────────────────────────────
+function saveMem(text){
+  memory.push({text:text,ts:Date.now()});
+  // Keep only last 40 memories
+  if(memory.length>40)memory=memory.slice(-40);
+  localStorage.setItem(MK,JSON.stringify(memory));
+  updateMemBar();
+}
+function delMem(i){memory.splice(i,1);localStorage.setItem(MK,JSON.stringify(memory));updateMemBar();if(page==='settings')renderPage();}
+function updateMemBar(){
+  var el=document.getElementById('nx-mem-count');
+  if(el)el.textContent=memory.length+' memor'+(memory.length===1?'y':'ies')+' stored';
+}
+function memContext(){
+  if(!memory.length)return '';
+  return '\n\nWhat you remember about '+USER+':\n'+memory.map(function(m){return '• '+m.text;}).join('\n');
+}
+
+// ── NEXUS SYSTEM PROMPT ──────────────────────────────────────────────────────
+function buildSysPrompt(extra){
+  var pend=S.assignments.filter(function(a){return!a.done;});
+  var ov=pend.filter(function(a){return isOv(a.due);});
+  var td=new Date().toISOString().split('T')[0];
+  var dToday=pend.filter(function(a){return a.due===td;});
+  return 'You are NEXUS, a highly intelligent personal assistant — think Jarvis from Iron Man. '+
+    'You are formal but warm, precise, and genuinely personal. You always address the user as '+USER+' (never "buddy", "friend", etc). '+
+    'You are proactive, perceptive, and give concise but complete responses. Never rambling. Never generic. '+
+    'You are integrated into '+USER+'\'s personal command center app.\n\n'+
+    'Current date: '+new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})+'\n'+
+    'Time: '+new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})+'\n\n'+
+    'ASSIGNMENTS ('+pend.length+' pending):\n'+
+    (pend.length?pend.map(function(a){return'• '+a.title+' ['+a.subject+'] due '+a.due+(isOv(a.due)?' ⚠ OVERDUE':'')+(a.due===td?' ← DUE TODAY':'');}).join('\n'):'None pending')+'\n\n'+
+    (ov.length?'⚠ '+ov.length+' OVERDUE. Address these first.\n\n':'')+
+    'SMART HOME: lights '+(S.smartHome.mainLight?'on':'off')+', desk lamp '+(S.smartHome.deskLamp?'on':'off')+', thermostat '+S.smartHome.thermostat+'°F, DnD '+(S.smartHome.doNotDisturb?'on':'off')+
+    (memContext())+
+    (extra?'\n\n'+extra:'')+
+    '\n\nIMPORTANT: If '+USER+' tells you something personal, factual, or preference-based that you should remember, end your reply with a new line and exactly: REMEMBER: <the thing to remember in one sentence>. Only do this when it genuinely helps to remember something — not every message.';
+}
+
+// ── FIREBASE ──────────────────────────────────────────────────────────────────
+function parseConfig(raw){
+  var cfg={},cleaned=raw.replace(/^\s*(const|let|var)?\s*\w+\s*=\s*/,'').trim().replace(/;?\s*$/,'').trim();
+  if(cleaned[0]==='{')cleaned=cleaned.slice(1);if(cleaned[cleaned.length-1]==='}')cleaned=cleaned.slice(0,-1);
+  var re=/([a-zA-Z_]\w*)\s*:\s*["']([^"']*)["']/g,m;
+  while((m=re.exec(cleaned))!==null)cfg[m[1]]=m[2];
+  return cfg;
+}
+function fbRead(){return fetch(fbUrl+'.json').then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();});}
+function fbWrite(d){return fetch(fbUrl+'.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();});}
+
+function connectFB(){
+  var raw=document.getElementById('fb-inp').value.trim();
+  var err=document.getElementById('su-err'),btn=document.getElementById('su-btn');
+  err.style.display='none';
+  if(!raw){err.textContent='Paste your Firebase config first.';err.style.display='block';return;}
+  var cfg;try{cfg=parseConfig(raw);}catch(e){err.textContent='⚠ Could not parse.';err.style.display='block';return;}
+  if(!cfg.databaseURL){err.textContent='⚠ databaseURL missing — enable Realtime Database.';err.style.display='block';return;}
+  fbUrl=cfg.databaseURL.replace(/\/$/,'')+'/'+SP;
+  btn.textContent='Connecting...';btn.disabled=true;
+  fbWrite({_ping:Date.now()}).then(function(){
+    localStorage.setItem(FK,JSON.stringify(cfg));fbConn=true;
+    showApp();startSync();nav('dashboard');toast('Firebase connected 🔥');
+  }).catch(function(e){
+    err.textContent='⚠ '+e.message+' — set database to test mode.';
+    err.style.display='block';btn.textContent='Connect & Sync';btn.disabled=false;
+  });
+}
+function skipSetup(){showApp();setSync('off','Local only');nav('dashboard');}
+function showApp(){document.getElementById('setup').style.display='none';document.getElementById('app').style.visibility='visible';}
+function tryAuto(cb){
+  var s=localStorage.getItem(FK);if(!s){cb(false);return;}
+  try{var c=JSON.parse(s);fbUrl=c.databaseURL.replace(/\/$/,'')+'/'+SP;fbConn=true;cb(true);}catch(e){cb(false);}
+}
+function startSync(){
+  if(!fbUrl)return;setSync('saving','Syncing...');
+  fbRead().then(function(rem){
+    if(rem&&!rem._ping)applyRem(rem);
+    setSync('live','Synced');
+    clearInterval(pollInt);
+    pollInt=setInterval(function(){
+      if(!ignRem)fbRead().then(function(rem){
+        if(rem&&!rem._ping&&rem._ts&&rem._ts>lastTs){lastTs=rem._ts;applyRem(rem);}
+      }).catch(function(){setSync('err','Sync error');});
+    },5000);
+  }).catch(function(){setSync('err','Sync error');});
+}
+function applyRem(rem){
+  var k=S.apiKey||'',ci=S.spotifyClientId||'',st=S.spotifyToken||'',se=S.spotifyExpiry||0;
+  S=Object.assign(dc(DEF),rem);S.apiKey=k;S.spotifyClientId=ci;S.spotifyToken=st;S.spotifyExpiry=se;
+  delete S._ts;delete S._ping;localStorage.setItem(LK,JSON.stringify(S));
+  buildNav();buildTop();renderPage();setSync('live','Synced');
+}
+function save(){
+  localStorage.setItem(LK,JSON.stringify(S));
+  clearTimeout(saveTmr);setSync('saving','Saving...');
+  saveTmr=setTimeout(function(){
+    if(fbConn&&fbUrl){
+      var d=dc(S);delete d.apiKey;delete d.spotifyClientId;delete d.spotifyToken;delete d.spotifyExpiry;
+      d._ts=Date.now();ignRem=true;
+      fbWrite(d).then(function(){lastTs=d._ts;setSync('live','Synced');setTimeout(function(){ignRem=false;},1000);})
+        .catch(function(){ignRem=false;setSync('err','Save failed');});
+    }else{setSync('off','Saved locally');setTimeout(function(){setSync('off','Local only');},1400);}
+  },500);
+}
+function setSync(st,lbl){
+  var d=document.getElementById('s-dot'),l=document.getElementById('s-lbl');
+  if(!d)return;d.className='s-dot';
+  if(st==='live')d.classList.add('live');else if(st==='saving')d.classList.add('saving');else if(st==='err')d.classList.add('err');
+  if(l)l.textContent=lbl;
+}
+
+// ── NEXUS PANEL ──────────────────────────────────────────────────────────────
+function toggleNX(){if(nxOpen)closeNX();else openNX();}
+function openNX(){
+  nxOpen=true;
+  document.getElementById('nx-panel').classList.add('open');
+  document.getElementById('nx-overlay').classList.add('show');
+  document.getElementById('nx-fab').classList.add('open');
+  updateMemBar();renderNXMsgs();
+  setTimeout(function(){
+    var i=document.getElementById('nx-inp');if(i)i.focus();
+    scrollNX();
+  },320);
+  // Update sidebar hint
+  var h=document.getElementById('s-nx-hint');
+  if(h)h.textContent='I\'m listening, '+USER+'.';
+}
+function closeNX(){
+  nxOpen=false;
+  document.getElementById('nx-panel').classList.remove('open');
+  document.getElementById('nx-overlay').classList.remove('show');
+  document.getElementById('nx-fab').classList.remove('open');
+  var h=document.getElementById('s-nx-hint');
+  if(h)h.textContent='Tap to ask me anything, '+USER+'.';
+}
+function scrollNX(){var e=document.getElementById('nx-msgs');if(e)e.scrollTop=e.scrollHeight;}
+
+function renderNXMsgs(){
+  var el=document.getElementById('nx-msgs');
+  if(!el)return;
+  el.innerHTML=nxMsgs.map(function(m){
+    var txt=m.content;
+    var memSaved='';
+    // Detect and strip REMEMBER: lines from display, show as tag
+    var remMatch=txt.match(/\nREMEMBER:\s*(.+)$/);
+    if(remMatch){txt=txt.replace(/\nREMEMBER:\s*.+$/,'').trim();memSaved='<div class="mem-saved">✦ Remembered</div>';}
+    return m.role==='user'
+      ?'<div class="nx-msg u"><div class="nx-bub usr">'+esc(m.content)+'</div></div>'
+      :'<div class="nx-msg"><div class="nx-av" style="width:24px;height:24px;font-size:11px;flex-shrink:0;background:linear-gradient(135deg,var(--acc),var(--ac2));border-radius:50%;display:flex;align-items:center;justify-content:center">◎</div><div class="nx-bub bot">'+esc(txt)+memSaved+'</div></div>';
+  }).join('');
+  if(nxLoad)el.innerHTML+='<div class="nx-msg"><div class="nx-av" style="width:24px;height:24px;font-size:11px;flex-shrink:0;background:linear-gradient(135deg,var(--acc),var(--ac2));border-radius:50%;display:flex;align-items:center;justify-content:center">◎</div><div class="nx-bub bot"><div class="nx-thinking"><div class="nx-dot-1"></div><div class="nx-dot-2"></div><div class="nx-dot-3"></div></div></div></div>';
+
+  // Context chips based on current page
+  var chips=[];
+  var td=new Date().toISOString().split('T')[0];
+  var pend=S.assignments.filter(function(a){return!a.done;});
+  var ov=pend.filter(function(a){return isOv(a.due);});
+  var dToday=pend.filter(function(a){return a.due===td;});
+  if(ov.length)chips.push('What\'s overdue?');
+  if(dToday.length)chips.push('What\'s due today?');
+  chips.push('Make me a study plan');
+  chips.push('What should I do first?');
+  if(page==='smarthome')chips.push('Set study mode');
+  if(page==='pomodoro')chips.push('How long should I study?');
+  chips=chips.slice(0,4);
+  var cc=document.getElementById('nx-chips');
+  if(cc)cc.innerHTML=chips.map(function(c){return'<button class="nx-chip" onclick="setNX(\''+esc(c)+'\')">'+esc(c)+'</button>';}).join('');
+}
+
+function setNX(t){var i=document.getElementById('nx-inp');if(i){i.value=t;i.focus();}}
+
+function sendNX(){
+  if(nxLoad)return;
+  var inp=document.getElementById('nx-inp');if(!inp)return;
+  var msg=inp.value.trim();if(!msg)return;
+  if(!S.apiKey){
+    nxMsgs.push({role:'assistant',content:'I need an Anthropic API key to respond, '+USER+'. You can add one in Settings.'});
+    renderNXMsgs();scrollNX();return;
+  }
+  inp.value='';nxLoad=true;nxMsgs.push({role:'user',content:msg});renderNXMsgs();scrollNX();
+  var statusEl=document.getElementById('nx-status');if(statusEl)statusEl.textContent='Thinking...';
+
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':S.apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:500,system:buildSysPrompt(),messages:nxMsgs.filter(function(m){return m.role!=='system';}).map(function(m){return{role:m.role,content:m.content};})})
+  }).then(function(r){return r.json();}).then(function(d){
+    if(d.error)throw new Error(d.error.message);
+    var reply=d.content[0].text;
+    // Extract and auto-save REMEMBER: directives
+    var remMatch=reply.match(/\nREMEMBER:\s*(.+)$/);
+    if(remMatch){saveMem(remMatch[1].trim());}
+    nxMsgs.push({role:'assistant',content:reply});
+    nxLoad=false;renderNXMsgs();scrollNX();
+    if(statusEl)statusEl.textContent='Online — ready';
+    var sh=document.getElementById('s-nx-hint');
+    if(sh&&!nxOpen)sh.textContent='I\'m listening, '+USER+'.';
+  }).catch(function(e){
+    nxMsgs.push({role:'assistant',content:'Something went wrong, '+USER+'. '+e.message});
+    nxLoad=false;renderNXMsgs();scrollNX();
+    if(statusEl)statusEl.textContent='Online — ready';
+  });
+}
+
+// ── ROUTING ──────────────────────────────────────────────────────────────────
+function nav(p){page=p;buildNav();buildTop();renderPage();}
+function buildNav(){
+  var pend=S.assignments.filter(function(a){return!a.done;}).length;
+  var ov=S.assignments.filter(function(a){return!a.done&&isOv(a.due);}).length;
+  var sn=document.getElementById('s-nav');
+  if(sn)sn.innerHTML=PAGES.map(function(p){
+    return'<button class="s-btn'+(page===p.id?' on':'')+'" onclick="nav(\''+p.id+'\')">'+
+      '<span class="s-icon">'+p.icon+'</span>'+p.label+
+      (p.id==='assignments'&&pend>0?'<span class="s-badge">'+pend+'</span>':'')+
+      (p.id==='assignments'&&ov>0?'<span class="s-badge r">'+ov+'!</span>':'')+
+    '</button>';
+  }).join('');
+  var bn=document.getElementById('bn-items');
+  if(bn)bn.innerHTML=PAGES.slice(0,6).map(function(p){
+    return'<button class="bn-btn'+(page===p.id?' on':'')+'" onclick="nav(\''+p.id+'\')">'+
+      (p.id==='assignments'&&ov>0?'<div class="bn-dot show"></div>':'')+
+      '<span class="bn-icon">'+p.icon+'</span><span>'+p.label+'</span></button>';
+  }).join('');
+}
+function buildTop(){
+  var pi=PAGES.find(function(x){return x.id===page;});
+  document.getElementById('t-title').textContent=pi?pi.label:'';
+  var td=new Date().toISOString().split('T')[0];
+  var ov=S.assignments.filter(function(a){return!a.done&&isOv(a.due);}).length;
+  var dt=S.assignments.filter(function(a){return!a.done&&a.due===td;}).length;
+  var ds=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  var fc=fbConn?'<span class="chip chip-grn">🔥 Synced</span>':'<span class="chip chip-warn" onclick="nav(\'settings\')">Local only</span>';
+  var sp=spTrack?'<span class="chip chip-grn" onclick="nav(\'music\')" style="cursor:pointer">▶ '+esc(spTrack.name.slice(0,16))+'</span>':'';
+  document.getElementById('t-chips').innerHTML=
+    (ov?'<span class="chip chip-red">⚠ '+ov+' overdue</span>':'')+
+    (dt?'<span class="chip chip-amb" style="margin-left:4px">'+dt+' today</span>':'')+
+    '<span class="chip chip-dim" style="margin-left:4px">'+ds+'</span>'+
+    '<span style="margin-left:4px">'+fc+'</span>'+
+    (sp?'<span style="margin-left:4px">'+sp+'</span>':'');
+}
+function renderPage(){
+  var c=document.getElementById('content');if(!c)return;
+  if(page==='dashboard')c.innerHTML=renderDash();
+  else if(page==='briefing'){c.innerHTML=renderBriefing();bindBriefing();}
+  else if(page==='assignments')c.innerHTML=renderAssignments();
+  else if(page==='ai'){c.innerHTML=renderAI();bindAI();}
+  else if(page==='music'){c.innerHTML=renderMusic();bindMusic();}
+  else if(page==='smarthome')c.innerHTML=renderHome();
+  else if(page==='pomodoro')c.innerHTML=renderPomo();
+  else if(page==='notes'){c.innerHTML=renderNotes();bindNotes();}
+  else if(page==='settings')c.innerHTML=renderSettings();
+}
+
+// ── DASHBOARD ─────────────────────────────────────────────────────────────────
+function renderDash(){
+  var as=S.assignments,pend=as.filter(function(a){return!a.done;}),
+    ov=pend.filter(function(a){return isOv(a.due);}),
+    done=as.filter(function(a){return a.done;}),
+    pct=as.length?Math.round(done.length/as.length*100):0,
+    up=pend.slice().sort(function(a,b){return new Date(a.due)-new Date(b.due);}).slice(0,4),
+    sh=S.smartHome,td=new Date().toISOString().split('T')[0],
+    dTd=pend.filter(function(a){return a.due===td;}),
+    hr=new Date().getHours(),
+    gr=hr<5?'Good evening':hr<12?'Good morning':hr<17?'Good afternoon':'Good evening';
+
+  var greetMsg = gr+', '+USER+'.';
+  if(ov.length) greetMsg += ' You have '+ov.length+' overdue assignment'+(ov.length>1?'s':'')+' requiring attention.';
+  else if(dTd.length) greetMsg += ' You have '+dTd.length+' assignment'+(dTd.length>1?'s':'')+' due today.';
+  else if(pend.length===0) greetMsg += ' You\'re all caught up — impressive.';
+  else greetMsg += ' Everything\'s on track.';
+
+  return '<div class="fi">'+
+  // Greeting card
+  '<div class="greet-card">'+
+    '<div class="greet-time">'+new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true})+'</div>'+
+    '<div class="greet-text">'+esc(greetMsg)+'</div>'+
+    (briefText
+      ?'<div class="greet-briefing">'+esc(briefText)+'</div>'
+      :(S.apiKey?'<button class="card-act" style="font-size:10px" onclick="nav(\'briefing\')">Get your daily briefing →</button>':''))+
+  '</div>'+
+  // Stats
+  '<div class="stat-row">'+
+    sBox(pend.length,'Pending','var(--t0)')+
+    sBox(ov.length,'Overdue','var(--red)')+
+    sBox(done.length,'Done','var(--grn)')+
+    sBox(pct+'%','Progress','var(--ac2)')+
+  '</div>'+
+  // Grid
+  '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'+
+    '<div class="card">'+
+      '<div class="card-hd"><span class="card-lbl">Upcoming</span><button class="card-act" onclick="nav(\'assignments\')">all →</button></div>'+
+      (up.length===0?'<div class="empty">All clear 🎉</div>':up.map(function(a){
+        return'<div class="arow">'+
+          '<div class="pdot" style="background:'+PC[a.priority]+'"></div>'+
+          '<div style="flex:1;min-width:0">'+
+            '<div class="atitle">'+esc(a.title)+'</div>'+
+            '<div class="ameta">'+
+              '<span class="stag" style="background:'+SC[a.subject]+'18;color:'+SC[a.subject]+'">'+a.subject+'</span>'+
+              '<span class="adue'+(isOv(a.due)?' ov':'')+'">'+fd(a.due)+'</span>'+
+            '</div>'+
+          '</div>'+
+        '</div>';
+      }).join(''))+
+    '</div>'+
+    '<div class="card">'+
+      '<div class="card-hd"><span class="card-lbl">Smart Home</span><button class="card-act" onclick="nav(\'smarthome\')">control →</button></div>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:8px">'+
+        [['mainLight','💡','Light'],['deskLamp','🔦','Lamp'],['fan','🌀','Fan'],['doNotDisturb','🔕','DnD']].map(function(d){
+          return'<div style="text-align:center;padding:7px 4px;background:var(--bg2);border-radius:6px;opacity:'+(sh[d[0]]?1:.25)+'">'+
+            '<div style="font-size:16px">'+d[1]+'</div>'+
+            '<div style="font-size:8px;color:var(--t2);margin-top:1px">'+d[2]+'</div>'+
+            '<div style="font-size:8px;font-family:var(--mono);color:'+(sh[d[0]]?'var(--grn)':'var(--t2)')+'">'+( sh[d[0]]?'ON':'OFF' )+'</div>'+
+          '</div>';
+        }).join('')+
+      '</div>'+
+      '<div style="text-align:center;font-family:var(--mono);font-size:12px;color:var(--amb)">🌡 '+sh.thermostat+'°F</div>'+
+    '</div>'+
+  '</div>'+
+  // Progress
+  '<div class="card" style="margin-top:8px">'+
+    '<div class="card-hd"><span class="card-lbl">Assignment Progress</span><span style="font-size:9px;color:var(--t2);font-family:var(--mono)">'+done.length+'/'+as.length+'</span></div>'+
+    '<div class="prog-bar"><div class="prog-fill" style="width:'+pct+'%"></div></div>'+
+  '</div></div>';
+}
+function sBox(n,l,c){return'<div class="stat-box"><div class="stat-n" style="color:'+c+'">'+n+'</div><div class="stat-l">'+l+'</div></div>';}
+
+// ── BRIEFING ─────────────────────────────────────────────────────────────────
+function renderBriefing(){
+  var td=new Date().toISOString().split('T')[0],tm=new Date(Date.now()+86400000).toISOString().split('T')[0];
+  var w7=new Date(Date.now()+7*86400000).toISOString().split('T')[0];
+  var pend=S.assignments.filter(function(a){return!a.done;});
+  var ov=pend.filter(function(a){return isOv(a.due);}),dTd=pend.filter(function(a){return a.due===td;}),dTm=pend.filter(function(a){return a.due===tm;});
+  var dWk=pend.filter(function(a){return a.due>tm&&a.due<=w7;}).sort(function(a,b){return new Date(a.due)-new Date(b.due);});
+  var hr=new Date().getHours(),gr=hr<12?'Good morning':'Good afternoon';
+  var ne=Notification&&Notification.permission==='granted',nt=S.nightlyTime||'21:00';
+
+  return'<div class="fi">'+
+  '<div class="brief-hd">'+
+    '<div class="brief-gr">'+gr+', '+USER+'. ☀️</div>'+
+    '<div class="brief-dt">'+new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})+'</div>'+
+  '</div>'+
+
+  '<div class="brief-ai" style="border-color:'+(S.apiKey?'var(--acc)30':'var(--line)')+'">'+
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">'+
+      '<span style="font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--t2);font-family:var(--mono)">NEXUS Daily Briefing</span>'+
+      (S.apiKey?'<button class="card-act" onclick="genBriefing()">'+( briefLoad?'generating…':'refresh ↺' )+'</button>':
+        '<button class="card-act" onclick="nav(\'settings\')">add api key →</button>')+
+    '</div>'+
+    (briefLoad?'<div class="nx-thinking" style="padding:6px 0"><div class="nx-dot-1"></div><div class="nx-dot-2"></div><div class="nx-dot-3"></div></div>':
+      briefText?'<div style="font-size:12px;color:var(--t1);line-height:1.85;white-space:pre-wrap">'+esc(briefText)+'</div>':
+        '<div style="font-size:11px;color:var(--t2)">'+(S.apiKey?'Click refresh for your personalized briefing.':'Add an API key in Settings to enable your daily briefing.')+'</div>')+
+  '</div>'+
+
+  bSection('⚠ Overdue',ov,'var(--red)')+
+  bSection('📅 Due Today',dTd,'var(--amb)')+
+  bSection('🌙 Due Tomorrow',dTm,'var(--line)')+
+  (dWk.length?bSection('📆 This Week',dWk,'var(--line)'):'')+
+
+  '<div class="card">'+
+    '<div class="card-hd"><span class="card-lbl">Nightly Brief</span></div>'+
+    '<div style="font-size:11px;color:var(--t2);line-height:1.7;margin-bottom:11px">Get a notification each night with what\'s due tomorrow. App must be open in a browser tab.</div>'+
+    '<div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap">'+
+      '<input type="time" id="nt-t" value="'+nt+'" style="background:var(--bg2);border:1px solid var(--l2);color:var(--t0);border-radius:6px;padding:5px 9px;font-size:11px;font-family:var(--mono);outline:none"/>'+
+      '<button class="btn" onclick="saveNightly()">Save</button>'+
+      (ne?'<span style="font-size:10px;color:var(--grn);font-family:var(--mono)">✓ enabled</span>':'<button class="btn ghost" onclick="reqNotif()">Enable Notifications</button>')+
+    '</div>'+
+    (ne?'<div style="margin-top:7px;font-size:9px;color:var(--t2);font-family:var(--mono)">fires at '+nt+' · <button class="card-act" onclick="testNotif()">test</button></div>':'')+
+  '</div></div>';
+}
+function bSection(label,items,bcolor){
+  return'<div class="card" style="margin-bottom:7px;border-color:'+bcolor+'30">'+
+    '<div class="card-hd"><span class="card-lbl">'+label+' ('+items.length+')</span></div>'+
+    (items.length===0?'<div class="empty" style="padding:7px 0">Nothing here</div>':
+      items.map(function(a){return'<div class="arow">'+
+        '<div class="pdot" style="background:'+PC[a.priority]+'"></div>'+
+        '<div style="flex:1;min-width:0"><div class="atitle">'+esc(a.title)+'</div>'+
+        '<div class="ameta"><span class="stag" style="background:'+SC[a.subject]+'18;color:'+SC[a.subject]+'">'+a.subject+'</span>'+
+        '<span class="adue'+(isOv(a.due)?' ov':'')+'">'+fd(a.due)+'</span></div></div>'+
+        '<input type="checkbox" style="width:14px;height:14px;accent-color:var(--acc);cursor:pointer" '+(a.done?'checked':'')+' onchange="toggleA('+a.id+')"/>'+
+      '</div>';}).join(''))+
+  '</div>';
+}
+function bindBriefing(){var td=new Date().toISOString().split('T')[0];if(S.apiKey&&!briefLoad&&briefDate!==td)genBriefing();}
+function genBriefing(){
+  if(!S.apiKey){toast('Add API key in Settings');return;}
+  if(briefLoad)return;briefLoad=true;if(page==='briefing'||page==='dashboard')renderPage();
+  var td=new Date().toISOString().split('T')[0],tm=new Date(Date.now()+86400000).toISOString().split('T')[0];
+  var p=S.assignments.filter(function(a){return!a.done;});
+  var prompt='You are NEXUS, a formal-but-personal AI assistant for '+USER+', a high school student with 7+ classes. Give a concise (under 130 words), clear, motivating daily briefing. Address '+USER+' directly. Be specific about assignments. Jarvis-style voice — intelligent, warm, precise.\n\n'+
+    'Today: '+new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})+'\n'+
+    'OVERDUE: '+(p.filter(function(a){return isOv(a.due);}).map(function(a){return a.title+'('+a.subject+')';}).join(', ')||'none')+'\n'+
+    'TODAY: '+(p.filter(function(a){return a.due===td;}).map(function(a){return a.title;}).join(', ')||'none')+'\n'+
+    'TOMORROW: '+(p.filter(function(a){return a.due===tm;}).map(function(a){return a.title;}).join(', ')||'none')+'\n'+
+    'COMING: '+(p.filter(function(a){return a.due>tm;}).slice(0,4).map(function(a){return a.title+'('+fd(a.due)+')';}).join(', ')||'none')+'\n'+
+    memContext()+'\nGive '+USER+' a clear priority for today. If overdue work exists, address it with urgency.';
+  fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':S.apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:280,messages:[{role:'user',content:prompt}]})})
+    .then(function(r){return r.json();}).then(function(d){
+      if(d.error)throw new Error(d.error.message);
+      briefText=d.content[0].text;briefDate=td;briefLoad=false;
+      if(page==='briefing'||page==='dashboard')renderPage();
+    }).catch(function(e){briefText='Unable to generate briefing: '+e.message;briefLoad=false;if(page==='briefing'||page==='dashboard')renderPage();});
+}
+function reqNotif(){if(!('Notification'in window)){toast('Not supported');return;}Notification.requestPermission().then(function(p){if(p==='granted'){toast('Notifications enabled ✓');schedNightly();if(page==='briefing')renderPage();}else toast('Permission denied');});}
+function saveNightly(){var i=document.getElementById('nt-t');if(!i)return;S.nightlyTime=i.value;save();schedNightly();toast('Set for '+i.value);}
+function schedNightly(){
+  clearTimeout(nightlyTmr);if(!Notification||Notification.permission!=='granted')return;
+  var p=(S.nightlyTime||'21:00').split(':'),h=parseInt(p[0]),m=parseInt(p[1]||0);
+  var now=new Date(),t=new Date();t.setHours(h,m,0,0);if(t<=now)t.setDate(t.getDate()+1);
+  nightlyTmr=setTimeout(function(){fireNightly();schedNightly();},t-now);
+}
+function fireNightly(){
+  var tm=new Date(Date.now()+86400000).toISOString().split('T')[0];
+  var p=S.assignments.filter(function(a){return!a.done;});
+  var ov=p.filter(function(a){return isOv(a.due);}),dt=p.filter(function(a){return a.due===tm;});
+  var lines=[];
+  if(ov.length)lines.push('⚠ Overdue: '+ov.map(function(a){return a.title;}).join(', '));
+  lines.push(dt.length?'📅 Tomorrow: '+dt.map(function(a){return a.title;}).join(', '):'✓ Nothing due tomorrow, '+USER);
+  new Notification('NEXUS — Nightly Brief',{body:lines.join('\n'),tag:'nexus-night',requireInteraction:true});
+}
+function testNotif(){if(!Notification||Notification.permission!=='granted'){reqNotif();return;}fireNightly();toast('Test sent');}
+
+// ── ASSIGNMENTS ──────────────────────────────────────────────────────────────
+function renderAssignments(){
+  var f=S.assignments.filter(function(a){
+    if(aFilter==='pending')return!a.done;if(aFilter==='done')return a.done;
+    if(aFilter==='overdue')return!a.done&&isOv(a.due);return true;
+  }).sort(function(a,b){return new Date(a.due)-new Date(b.due);});
+  return'<div class="fi">'+
+  '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">'+
+    '<div class="ftabs">'+['all','pending','done','overdue'].map(function(t){return'<button class="ftab'+(aFilter===t?' on':'')+'" onclick="setF(\''+t+'\')">'+cap(t)+'</button>';}).join('')+'</div>'+
+    '<button class="btn'+(formOpen?' ghost':'')+'" onclick="togForm()">'+( formOpen?'Cancel':'+ Add' )+'</button>'+
+  '</div>'+
+  (formOpen?'<div class="card" style="margin-bottom:10px">'+
+    '<input class="f-inp" id="f-title" placeholder="Assignment title..."/>'+
+    '<div class="f-row">'+
+      '<select class="f-inp f-sm" id="f-sub">'+SUBJECTS.map(function(s){return'<option>'+s+'</option>';}).join('')+'</select>'+
+      '<input type="date" class="f-inp f-sm" id="f-due"/>'+
+      '<select class="f-inp f-sm" id="f-pri"><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option></select>'+
+      '<button class="btn" onclick="addA()">Add</button>'+
+    '</div></div>':'')+
+  '<div>'+
+    (f.length===0?'<div class="empty">Nothing here, '+USER+'.</div>':f.map(function(a){
+      var o=!a.done&&isOv(a.due);
+      return'<div style="display:flex;align-items:center;gap:10px;padding:11px 13px;background:var(--bg1);border:1px solid var(--line);border-radius:var(--r);margin-bottom:6px;border-left:2px solid '+PC[a.priority]+';opacity:'+(a.done?.4:1)+'">'+
+        '<input type="checkbox" style="width:14px;height:14px;accent-color:var(--acc);cursor:pointer;flex-shrink:0" '+(a.done?'checked':'')+' onchange="toggleA('+a.id+')"/>'+
+        '<div style="flex:1;min-width:0">'+
+          '<div class="atitle'+(a.done?' done':'')+'">'+esc(a.title)+'</div>'+
+          '<div class="ameta">'+
+            '<span class="stag" style="background:'+SC[a.subject]+'18;color:'+SC[a.subject]+'">'+a.subject+'</span>'+
+            '<span class="adue'+(o?' ov':'')+'">'+( o?'⚠ OVERDUE · ':'' )+'Due '+fd(a.due)+'</span>'+
+            (!a.done?'<span class="ai-insight" onclick="askAboutAssign(\''+esc(a.title)+'\',\''+a.subject+'\')">◎ Ask NEXUS</span>':'')+
+          '</div>'+
+        '</div>'+
+        '<button onclick="delA('+a.id+')" style="background:none;border:none;color:var(--t2);font-size:12px;padding:3px 5px;border-radius:4px" onmouseover="this.style.color=\'var(--red)\'" onmouseout="this.style.color=\'var(--t2)\'">✕</button>'+
+      '</div>';
+    }).join(''))+
+  '</div></div>';
+}
+function askAboutAssign(title,subject){
+  var q='I have "'+title+'" for '+subject+'. Can you help me figure out where to start?';
+  openNX();setTimeout(function(){setNX(q);},350);
+}
+function setF(f){aFilter=f;renderPage();}
+function togForm(){formOpen=!formOpen;renderPage();}
+function addA(){
+  var t=(document.getElementById('f-title')||{}).value||'';t=t.trim();
+  var d=(document.getElementById('f-due')||{}).value||'';
+  if(!t||!d){toast('Fill in title and date');return;}
+  S.assignments.push({id:Date.now(),title:t,subject:document.getElementById('f-sub').value,due:d,priority:document.getElementById('f-pri').value,done:false});
+  formOpen=false;save();renderPage();buildNav();buildTop();toast('Added');
+}
+function toggleA(id){var a=S.assignments.find(function(x){return x.id===id;});if(a){a.done=!a.done;save();buildNav();buildTop();}}
+function delA(id){S.assignments=S.assignments.filter(function(x){return x.id!==id;});save();renderPage();buildNav();buildTop();toast('Deleted');}
+
+// ── AI PAGE ───────────────────────────────────────────────────────────────────
+function renderAI(){
+  var hk=!!S.apiKey;
+  return'<div class="chat-wrap fi" style="height:calc(100vh - 96px)">'+
+    '<div style="padding:10px 12px;background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);margin-bottom:10px;font-size:11px;color:var(--t1);line-height:1.6">'+
+      '<div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">'+
+        '<div style="width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--ac2));display:flex;align-items:center;justify-content:center;font-size:10px">◎</div>'+
+        '<span style="font-size:10px;font-weight:600;color:var(--t0)">NEXUS</span>'+
+        '<span style="font-size:9px;color:var(--t2);font-family:var(--mono)">Personal Assistant</span>'+
+      '</div>'+
+      (hk?'Full conversation with NEXUS. I know your assignments and remember things you\'ve told me.'+
+        '<button onclick="clearAK()" style="background:none;border:none;color:var(--t2);font-size:9px;cursor:pointer;margin-left:8px;font-family:var(--mono)">change key</button>':
+        '🔑 Add your Anthropic API key to activate NEXUS.<div style="display:flex;gap:7px;margin-top:7px"><input id="ak-inp" type="password" class="f-inp" placeholder="sk-ant-..." style="max-width:300px;font-size:11px"/><button class="btn" style="font-size:11px" onclick="saveAK()">Save</button></div>')+
+    '</div>'+
+    '<div class="chat-msgs" id="chat-msgs">'+
+      chatMsgs.map(function(m){return m.role==='user'
+        ?'<div class="cmsg u"><div class="cbub usr">'+esc(m.content)+'</div></div>'
+        :'<div class="cmsg"><div class="cav">◎</div><div class="cbub bot">'+esc(m.content)+'</div></div>';}).join('')+
+      (aiLoad?'<div class="cmsg"><div class="cav">◎</div><div class="cbub bot"><div class="nx-thinking"><div class="nx-dot-1"></div><div class="nx-dot-2"></div><div class="nx-dot-3"></div></div></div></div>':'')+
+    '</div>'+
+    '<div class="qchips">'+['What should I do first?','Quiz me','Explain a concept','Study plan for this week'].map(function(q){return'<button class="qchip" onclick="setCH(\''+q+'\')">'+q+'</button>';}).join('')+'</div>'+
+    '<div class="cinput-row"><input class="cinput" id="ch-inp" placeholder="Talk to NEXUS..." onkeydown="if(event.key===\'Enter\')sendCH()"/><button class="csend" id="ch-send" onclick="sendCH()" '+(aiLoad?'disabled':'')+'>▶</button></div>'+
+  '</div>';
+}
+function bindAI(){setTimeout(function(){var e=document.getElementById('chat-msgs');if(e)e.scrollTop=e.scrollHeight;},40);}
+function saveAK(){var v=(document.getElementById('ak-inp')||{}).value||'';v=v.trim();if(!v)return;S.apiKey=v;localStorage.setItem(LK,JSON.stringify(S));renderPage();bindAI();toast('API key saved');}
+function clearAK(){S.apiKey='';localStorage.setItem(LK,JSON.stringify(S));renderPage();}
+function setCH(t){var i=document.getElementById('ch-inp');if(i){i.value=t;i.focus();}}
+function sendCH(){
+  if(aiLoad)return;var inp=document.getElementById('ch-inp');if(!inp)return;
+  var msg=inp.value.trim();if(!msg)return;if(!S.apiKey){toast('Add API key first');return;}
+  inp.value='';aiLoad=true;chatMsgs.push({role:'user',content:msg});renderPage();bindAI();
+  fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':S.apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:700,system:buildSysPrompt(),messages:chatMsgs.map(function(m){return{role:m.role,content:m.content};})})})
+    .then(function(r){return r.json();}).then(function(d){
+      if(d.error)throw new Error(d.error.message);
+      var reply=d.content[0].text;
+      var rem=reply.match(/\nREMEMBER:\s*(.+)$/);if(rem)saveMem(rem[1].trim());
+      chatMsgs.push({role:'assistant',content:reply});aiLoad=false;renderPage();bindAI();
+    }).catch(function(e){chatMsgs.push({role:'assistant',content:'Error: '+e.message});aiLoad=false;renderPage();bindAI();});
+}
+
+// ── SPOTIFY ──────────────────────────────────────────────────────────────────
+var SP_SC='streaming user-read-playback-state user-modify-playback-state user-read-currently-playing playlist-read-private user-library-read';
+function spAuth(){if(!S.spotifyClientId){toast('Enter Client ID first');return;}var ru=window.location.href.split('#')[0].split('?')[0];window.location.href='https://accounts.spotify.com/authorize?client_id='+encodeURIComponent(S.spotifyClientId)+'&response_type=token&redirect_uri='+encodeURIComponent(ru)+'&scope='+encodeURIComponent(SP_SC)+'&show_dialog=false';}
+function spChk(){var h=window.location.hash;if(h&&h.includes('access_token')){var p={};h.slice(1).split('&').forEach(function(x){var kv=x.split('=');p[kv[0]]=decodeURIComponent(kv[1]||'');});if(p.access_token){S.spotifyToken=p.access_token;S.spotifyExpiry=Date.now()+(parseInt(p.expires_in||3600)*1000);localStorage.setItem(LK,JSON.stringify(S));history.replaceState(null,'',window.location.pathname+window.location.search);toast('Spotify connected 🎵');return true;}}return false;}
+function spOk(){return S.spotifyToken&&Date.now()<(S.spotifyExpiry||0);}
+function spAPI(m,path,b){return fetch('https://api.spotify.com/v1'+path,{method:m||'GET',headers:{'Authorization':'Bearer '+S.spotifyToken,'Content-Type':'application/json'},body:b?JSON.stringify(b):undefined}).then(function(r){if(r.status===204)return null;if(r.status===401){S.spotifyToken='';localStorage.setItem(LK,JSON.stringify(S));if(page==='music')renderPage();throw new Error('Token expired — reconnect');}if(!r.ok)throw new Error('Spotify '+r.status);return r.text().then(function(t){try{return JSON.parse(t);}catch(e){return null;}});});}
+
+function renderMusic(){
+  var hasCid=!!S.spotifyClientId,hasToken=spOk(),ru=window.location.href.split('#')[0].split('?')[0];
+  if(!hasCid)return'<div class="fi"><div class="card">'+
+    '<div class="card-hd"><span class="card-lbl">Spotify Setup</span></div>'+
+    '<div style="font-size:11px;color:var(--t1);line-height:1.8;margin-bottom:14px">'+
+      'Connect your Spotify account to control music from NEXUS.<br><br>'+
+      '<strong style="color:var(--t0)">1.</strong> Go to <a href="https://developer.spotify.com/dashboard" target="_blank">developer.spotify.com/dashboard</a><br>'+
+      '<strong style="color:var(--t0)">2.</strong> Create an app, then add this Redirect URI in Settings:<br>'+
+      '<code style="background:var(--bg3);padding:4px 8px;border-radius:4px;font-size:9px;display:inline-block;margin:5px 0;color:var(--grn);word-break:break-all">'+esc(ru)+'</code><br>'+
+      '<strong style="color:var(--t0)">3.</strong> Copy your Client ID and paste below'+
+    '</div>'+
+    '<div style="display:flex;gap:7px"><input class="f-inp" id="sp-cid" placeholder="Client ID..." style="max-width:320px"/><button class="btn green" onclick="saveSpCid()">Save</button></div>'+
+  '</div></div>';
+  if(!hasToken)return'<div class="fi"><div class="card" style="text-align:center;padding:28px 20px">'+
+    '<div style="font-size:36px;margin-bottom:10px">♫</div>'+
+    '<div style="font-size:13px;font-weight:600;color:var(--t0);margin-bottom:5px">Connect Spotify</div>'+
+    '<div style="font-size:11px;color:var(--t1);margin-bottom:16px">Authorize NEXUS to control your Spotify playback.</div>'+
+    '<button class="btn green" onclick="spAuth()">Connect with Spotify</button>'+
+    '<div style="margin-top:12px;font-size:9px;color:var(--t2)">Client ID: '+esc(S.spotifyClientId.slice(0,8))+'… <button class="card-act" onclick="clearSp()">change</button></div>'+
+  '</div></div>';
+  var pp=Math.round(spPos/spDur*100);
+  return'<div class="fi">'+
+  '<div class="sp-player">'+
+    (spTrack?'<div class="sp-track">'+
+      (spTrack.album&&spTrack.album.images&&spTrack.album.images[0]?'<img class="sp-art" src="'+esc(spTrack.album.images[0].url)+'" alt=""/>':'<div class="sp-ph">♫</div>')+
+      '<div style="flex:1;min-width:0"><div class="sp-nm">'+esc(spTrack.name)+'</div><div class="sp-ar">'+esc((spTrack.artists||[]).map(function(a){return a.name;}).join(', '))+'</div></div>'+
+      '<span style="font-size:9px;font-family:var(--mono);color:var(--grn)">'+(spPlaying?'▶':'⏸')+'</span>'+
+    '</div>':'<div style="font-size:11px;color:var(--t2);padding:10px 0 14px">Nothing playing — start Spotify on any device first.</div>')+
+    '<div class="sp-prog"><div class="sp-pf" id="sp-pf" style="width:'+pp+'%"></div></div>'+
+    '<div class="sp-ctrl">'+
+      '<button class="sp-btn" onclick="spCmd(\'prev\')">⏮</button>'+
+      '<button class="sp-btn main" id="sp-pp" onclick="spCmd(\'toggle\')">'+(spPlaying?'⏸':'▶')+'</button>'+
+      '<button class="sp-btn" onclick="spCmd(\'next\')">⏭</button>'+
+    '</div>'+
+    '<div class="sp-vol-row"><span style="font-size:10px;color:var(--t2)">🔈</span><input type="range" class="sp-vol" id="sp-vol" min="0" max="100" value="'+spVol+'" oninput="spVol$(this.value)"/><span style="font-size:10px;color:var(--t2)">🔊</span></div>'+
+  '</div>'+
+  '<div class="card"><div class="card-hd"><span class="card-lbl">Playlists</span><button class="card-act" onclick="spLists()">refresh</button></div>'+
+    '<div id="sp-lists">'+
+      (spLists.length===0?'<div class="empty">Loading playlists…</div>':spLists.map(function(pl){return'<div class="sp-pl-item" onclick="spPlay(\''+esc(pl.uri)+'\')">'+
+        (pl.images&&pl.images[0]?'<img class="sp-pl-img" src="'+esc(pl.images[0].url)+'" alt=""/>':'<div class="sp-pl-img">♫</div>')+
+        '<div><div class="sp-pl-nm">'+esc(pl.name)+'</div><div class="sp-pl-ct">'+(pl.tracks?pl.tracks.total:0)+' tracks</div></div></div>';}).join(''))+
+    '</div>'+
+  '</div>'+
+  '<div style="margin-top:8px;text-align:right"><button class="card-act" onclick="clearSp()">Disconnect Spotify</button></div>'+
+  '</div>';
+}
+function bindMusic(){if(spOk()){spFetch();spLists();clearInterval(spPollInt);spPollInt=setInterval(function(){if(spOk()&&page==='music')spFetch();},4000);}}
+function saveSpCid(){var v=(document.getElementById('sp-cid')||{}).value||'';v=v.trim();if(!v){toast('Enter Client ID');return;}S.spotifyClientId=v;localStorage.setItem(LK,JSON.stringify(S));renderPage();}
+function clearSp(){S.spotifyToken='';S.spotifyExpiry=0;spTrack=null;spPlaying=false;clearInterval(spPollInt);localStorage.setItem(LK,JSON.stringify(S));renderPage();buildTop();}
+function spFetch(){if(!spOk())return;spAPI('GET','/me/player').then(function(d){if(!d){spPlaying=false;spTrack=null;}else{spTrack=d.item;spPlaying=d.is_playing;spVol=d.device?d.device.volume_percent:50;spPos=d.progress_ms||0;spDur=d.item?d.item.duration_ms:1;}if(page==='music'){var pp=document.getElementById('sp-pp');if(pp)pp.textContent=spPlaying?'⏸':'▶';var pf=document.getElementById('sp-pf');if(pf)pf.style.width=Math.round(spPos/spDur*100)+'%';}buildTop();}).catch(function(){});}
+function spLists(){if(!spOk())return;spAPI('GET','/me/playlists?limit=20').then(function(d){if(d&&d.items){spLists=d.items;if(page==='music'){var el=document.getElementById('sp-lists');if(el)el.innerHTML=spLists.map(function(pl){return'<div class="sp-pl-item" onclick="spPlay(\''+esc(pl.uri)+'\')">'+( pl.images&&pl.images[0]?'<img class="sp-pl-img" src="'+esc(pl.images[0].url)+'" alt=""/>':'<div class="sp-pl-img">♫</div>' )+'<div><div class="sp-pl-nm">'+esc(pl.name)+'</div><div class="sp-pl-ct">'+(pl.tracks?pl.tracks.total:0)+' tracks</div></div></div>';}).join('');}};}).catch(function(){});}
+function spCmd(c){if(!spOk()){toast('Reconnect Spotify');return;}if(c==='toggle')spAPI('PUT',spPlaying?'/me/player/pause':'/me/player/play').then(function(){spPlaying=!spPlaying;if(page==='music'){var b=document.getElementById('sp-pp');if(b)b.textContent=spPlaying?'⏸':'▶';}}).catch(function(e){toast(e.message);});else if(c==='next')spAPI('POST','/me/player/next').then(function(){setTimeout(spFetch,400);}).catch(function(e){toast(e.message);});else if(c==='prev')spAPI('POST','/me/player/previous').then(function(){setTimeout(spFetch,400);}).catch(function(e){toast(e.message);});}
+function spVol$(v){spVol=parseInt(v);if(!spOk())return;clearTimeout(spVol$._t);spVol$._t=setTimeout(function(){spAPI('PUT','/me/player/volume?volume_percent='+spVol).catch(function(){});},300);}
+function spPlay(uri){if(!spOk()){toast('Reconnect Spotify');return;}spAPI('PUT','/me/player/play',{context_uri:uri}).then(function(){setTimeout(spFetch,500);toast('Playing ♫');}).catch(function(e){toast(e.message+' — open Spotify on a device first');});}
+
+// ── SMART HOME ────────────────────────────────────────────────────────────────
+function renderHome(){
+  var sh=S.smartHome;
+  var DEVS=[{k:'mainLight',i:'💡',l:'Main Light',d:'Overhead'},{k:'deskLamp',i:'🔦',l:'Desk Lamp',d:'Study area'},{k:'fan',i:'🌀',l:'Fan',d:'Air flow'},{k:'doNotDisturb',i:'🔕',l:'Do Not Disturb',d:'Silence alerts'}];
+  var SCENES=[{l:'Study',i:'📚',s:'study'},{l:'Chill',i:'😊',s:'chill'},{l:'Sleep',i:'🌙',s:'sleep'},{l:'All on',i:'☀️',s:'on'},{l:'All off',i:'🌑',s:'off'}];
+  return'<div class="fi"><div class="scene-row">'+SCENES.map(function(s){return'<button class="scene-btn" onclick="setScene(\''+s.s+'\')"><span style="font-size:20px">'+s.i+'</span>'+s.l+'</button>';}).join('')+'</div>'+
+  '<div class="dev-grid">'+DEVS.map(function(d){return'<div class="dev-card'+(sh[d.k]?' on':'')+'" onclick="togDev(\''+d.k+'\')">'+
+    '<div class="dev-em">'+d.i+'</div><div class="dev-nm">'+d.l+'</div><div class="dev-ds">'+d.d+'</div>'+
+    '<div class="tog'+(sh[d.k]?' on':'')+'"><div class="tog-t"></div></div></div>';}).join('')+
+    '<div class="dev-card on"><div class="dev-em">🌡</div><div class="dev-nm">Thermostat</div><div class="dev-ds">Temperature</div>'+
+    '<div class="thermo-row"><button class="thermo-btn" onclick="adjT(-1)">−</button><div class="thermo-v">'+sh.thermostat+'°F</div><button class="thermo-btn" onclick="adjT(1)">+</button></div></div>'+
+  '</div></div>';
+}
+function togDev(k){S.smartHome[k]=!S.smartHome[k];save();renderPage();}
+function adjT(d){S.smartHome.thermostat=Math.max(60,Math.min(90,S.smartHome.thermostat+d));save();renderPage();}
+function setScene(s){
+  var sh=S.smartHome;
+  if(s==='study')Object.assign(sh,{mainLight:true,deskLamp:true,fan:true,doNotDisturb:true,thermostat:68});
+  else if(s==='chill')Object.assign(sh,{mainLight:false,deskLamp:true,fan:false,doNotDisturb:false,thermostat:72});
+  else if(s==='sleep')Object.assign(sh,{mainLight:false,deskLamp:false,fan:true,doNotDisturb:true,thermostat:65});
+  else if(s==='on')Object.assign(sh,{mainLight:true,deskLamp:true,fan:true,doNotDisturb:false});
+  else if(s==='off')Object.assign(sh,{mainLight:false,deskLamp:false,fan:false,doNotDisturb:false});
+  save();renderPage();toast(cap(s)+' mode activated');
+}
+
+// ── POMODORO ──────────────────────────────────────────────────────────────────
+function renderPomo(){
+  var tot=pomPhase==='work'?25*60:5*60,pct=((tot-pomSecs)/tot)*100;
+  var r=76,C=2*Math.PI*r,dash=C-(pct/100)*C;
+  var m=String(Math.floor(pomSecs/60)).padStart(2,'0'),s=String(pomSecs%60).padStart(2,'0');
+  return'<div class="pom-wrap fi">'+
+  '<div class="pom-tabs">'+
+    '<button class="pom-tab'+(pomPhase==='work'?' on':'')+'" onclick="setPP(\'work\')">Work 25m</button>'+
+    '<button class="pom-tab'+(pomPhase==='break'?' on':'')+'" onclick="setPP(\'break\')">Break 5m</button>'+
+  '</div>'+
+  '<div class="ring-wrap">'+
+    '<svg class="ring-svg" width="180" height="180" viewBox="0 0 180 180">'+
+      '<circle cx="90" cy="90" r="'+r+'" fill="none" stroke="var(--bg3)" stroke-width="7"/>'+
+      '<circle cx="90" cy="90" r="'+r+'" fill="none" stroke="'+(pomPhase==='work'?'var(--acc)':'var(--grn)')+'" stroke-width="7" stroke-linecap="round" stroke-dasharray="'+C+'" stroke-dashoffset="'+dash+'" style="transition:stroke-dashoffset .5s"/>'+
+    '</svg>'+
+    '<div><div class="ring-time">'+m+':'+s+'</div><div class="ring-lbl">'+(pomPhase==='work'?'focus':'break')+'</div></div>'+
+  '</div>'+
+  '<div class="pom-ctrl">'+
+    '<button class="pom-btn" onclick="pomR()">↺</button>'+
+    '<button class="pom-btn main" style="background:'+(pomRun?'var(--red)':'var(--acc)')+'" onclick="pomT()">'+(pomRun?'⏸':'▶')+'</button>'+
+    '<button class="pom-btn" onclick="pomS()">⏭</button>'+
+  '</div>'+
+  '<div style="display:flex;align-items:center;gap:4px;margin-bottom:14px;flex-wrap:wrap;justify-content:center">'+
+    '🍅'.repeat(Math.min(pomCyc,8))+'<span style="font-size:9px;color:var(--t2);font-family:var(--mono);margin-left:5px">'+pomCyc+' done</span>'+
+  '</div>'+
+  '<div style="display:flex;gap:5px;flex-wrap:wrap;justify-content:center">'+
+    '<div class="pom-tip">one task only</div><div class="pom-tip">hydrate on breaks</div><div class="pom-tip">20-20-20 rule</div>'+
+  '</div>'+
+  (S.apiKey?'<button class="card-act" style="margin-top:14px;font-size:10px" onclick="openNX()">Ask NEXUS what to work on →</button>':'')+
+  '</div>';
+}
+function pomT(){pomRun=!pomRun;if(pomRun){clearInterval(pomInt);pomInt=setInterval(function(){pomSecs--;if(pomSecs<=0){clearInterval(pomInt);pomRun=false;if(pomPhase==='work'){pomCyc++;pomPhase='break';pomSecs=5*60;toast('Break time, '+USER+' 🍅');}else{pomPhase='work';pomSecs=25*60;toast('Back to work, '+USER+' 💪');}};if(page==='pomodoro')renderPage();},1000);}else clearInterval(pomInt);if(page==='pomodoro')renderPage();}
+function pomR(){clearInterval(pomInt);pomRun=false;pomSecs=pomPhase==='work'?25*60:5*60;renderPage();}
+function pomS(){clearInterval(pomInt);pomRun=false;if(pomPhase==='work'){pomPhase='break';pomSecs=5*60;}else{pomPhase='work';pomSecs=25*60;}renderPage();}
+function setPP(p){clearInterval(pomInt);pomRun=false;pomPhase=p;pomSecs=p==='work'?25*60:5*60;renderPage();}
+
+// ── NOTES ─────────────────────────────────────────────────────────────────────
+function renderNotes(){
+  var wc=S.notes.trim()?S.notes.trim().split(/\s+/).length:0;
+  return'<div class="fi" style="display:flex;flex-direction:column;height:100%">'+
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'+
+      '<span style="font-size:9px;color:var(--t2);font-family:var(--mono)">'+wc+' words · '+S.notes.length+' chars'+(fbConn?' · synced':'')+' </span>'+
+      '<div style="display:flex;gap:6px">'+
+        (S.apiKey?'<button class="card-act" style="font-size:9px" onclick="summarizeNotes()">◎ Summarize</button>':'')+
+        '<button class="btn ghost" style="padding:3px 9px;font-size:9px" onclick="clearNotes()">Clear</button>'+
+      '</div>'+
+    '</div>'+
+    '<textarea class="notes-ta" id="notes-ta" placeholder="Your notes, '+USER+'. Syncs across all devices automatically.">'+esc(S.notes)+'</textarea>'+
+  '</div>';
+}
+function bindNotes(){var ta=document.getElementById('notes-ta');if(!ta)return;ta.addEventListener('input',function(){S.notes=ta.value;save();});}
+function clearNotes(){if(!S.notes)return;S.notes='';save();renderPage();}
+function summarizeNotes(){
+  if(!S.notes.trim()){toast('No notes to summarize');return;}
+  openNX();
+  setTimeout(function(){setNX('Can you summarize my notes? Here they are:\n\n'+S.notes.slice(0,2000));},350);
+}
+
+// ── SETTINGS ──────────────────────────────────────────────────────────────────
+function renderSettings(){
+  return'<div class="fi">'+
+  '<div class="s-sec"><div class="s-sec-lbl">Firebase Sync</div>'+
+    '<div class="s-row"><div class="s-info"><div class="s-row-lbl">'+(fbConn?'🔥 Connected':'Not connected')+'</div><div class="s-row-desc">'+(fbConn?'Syncing real-time across all your devices':'Connect for automatic cross-device sync')+'</div></div>'+
+      '<button class="btn'+(fbConn?' danger':' ghost')+'" onclick="'+(fbConn?'disconnFB()':'showSetup()')+'">'+( fbConn?'Disconnect':'Connect' )+'</button>'+
+    '</div>'+
+  '</div>'+
+  '<div class="s-sec"><div class="s-sec-lbl">NEXUS Memory</div>'+
+    '<div class="s-row" style="flex-direction:column;align-items:flex-start">'+
+      '<div class="s-row-lbl" style="margin-bottom:4px">'+memory.length+' memor'+(memory.length===1?'y':'ies')+' stored</div>'+
+      '<div class="s-row-desc" style="margin-bottom:10px">NEXUS automatically remembers things you tell it. You can delete individual memories below.</div>'+
+      '<div style="display:flex;flex-wrap:wrap">'+
+        (memory.length===0?'<span style="font-size:10px;color:var(--t2)">No memories yet. Start chatting with NEXUS — it\'ll remember the important stuff.</span>':
+          memory.map(function(m,i){return'<div class="mem-tag">'+esc(m.text.slice(0,60))+(m.text.length>60?'…':'')+'<button class="mem-del" onclick="delMem('+i+')">✕</button></div>';}).join(''))+
+      '</div>'+
+      (memory.length>0?'<button class="btn danger" style="margin-top:10px;font-size:10px" onclick="clearAllMem()">Clear all memories</button>':'')+
+    '</div>'+
+  '</div>'+
+  '<div class="s-sec"><div class="s-sec-lbl">API Keys</div>'+
+    '<div class="s-row"><div class="s-info"><div class="s-row-lbl">Anthropic API Key</div><div class="s-row-desc">Powers NEXUS AI. Stored locally, never synced.</div></div>'+
+      '<button class="btn ghost" onclick="chgKey()">Configure</button></div>'+
+    '<div class="s-row"><div class="s-info"><div class="s-row-lbl">Spotify</div><div class="s-row-desc">'+(S.spotifyClientId?'Client ID configured':'Not configured')+'</div></div>'+
+      '<button class="btn ghost" onclick="nav(\'music\')">Music →</button></div>'+
+  '</div>'+
+  '<div class="s-sec"><div class="s-sec-lbl">Data</div>'+
+    '<div class="s-row"><div class="s-info"><div class="s-row-lbl">Export</div><div class="s-row-desc">Download JSON backup</div></div><button class="btn ghost" onclick="expD()">Export</button></div>'+
+    '<div class="s-row"><div class="s-info"><div class="s-row-lbl">Import</div><div class="s-row-desc">Restore from backup</div></div><label class="import-lbl" for="import-file">Import</label><input type="file" id="import-file" accept=".json" onchange="impD(event)"/></div>'+
+  '</div>'+
+  '<div class="s-sec"><div class="s-sec-lbl">Danger</div>'+
+    '<div class="s-row"><div class="s-info"><div class="s-row-lbl">Reset all data</div><div class="s-row-desc">Clears assignments, notes, settings. Cannot be undone.</div></div>'+
+      '<button class="btn danger" onclick="resetAll()">Reset</button></div>'+
+  '</div>'+
+  '<div style="font-size:9px;color:var(--t2);text-align:center;margin-top:10px;font-family:var(--mono)">NEXUS v4.0 — Personal Assistant</div>'+
+  '</div>';
+}
+function clearAllMem(){if(!confirm('Clear all memories?'))return;memory=[];localStorage.setItem(MK,JSON.stringify(memory));updateMemBar();renderPage();toast('Memories cleared');}
+function showSetup(){document.getElementById('setup').style.display='flex';}
+function disconnFB(){if(!confirm('Disconnect Firebase?'))return;localStorage.removeItem(FK);clearInterval(pollInt);fbConn=false;fbUrl=null;setSync('off','Local only');renderPage();buildTop();toast('Disconnected');}
+function chgKey(){var k=prompt('Anthropic API key:');if(k){S.apiKey=k.trim();localStorage.setItem(LK,JSON.stringify(S));toast('Saved');}}
+function expD(){var d=dc(S);delete d.apiKey;delete d.spotifyClientId;delete d.spotifyToken;delete d.spotifyExpiry;var b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='nexus-'+new Date().toISOString().split('T')[0]+'.json';a.click();toast('Exported');}
+function impD(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(ev){try{var d=JSON.parse(ev.target.result);if(d.assignments){S=Object.assign(dc(DEF),d);save();nav('dashboard');toast('Imported');}else toast('Invalid file');}catch(err){toast('Could not read');}};r.readAsText(f);}
+function resetAll(){if(!confirm('Reset all data for '+USER+'?'))return;S=dc(DEF);localStorage.removeItem(LK);save();nav('dashboard');toast('Reset');}
+
+// ── PWA ───────────────────────────────────────────────────────────────────────
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();});
+var mf={name:'NEXUS',short_name:'NEXUS',start_url:'./',display:'standalone',background_color:'#0a0a0a',theme_color:'#0a0a0a',icons:[{src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="%236c5ce7"/><text y=".9em" font-size="80" x="10">◎</text></svg>',sizes:'any',type:'image/svg+xml'}]};
+var ml=document.createElement('link');ml.rel='manifest';ml.href='data:application/json,'+encodeURIComponent(JSON.stringify(mf));document.head.appendChild(ml);
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+spChk();
+updateMemBar();
+tryAuto(function(ok){
+  if(ok){showApp();startSync();}
+  nav('dashboard');
+});
+if(Notification&&Notification.permission==='granted')schedNightly();
+setTimeout(function(){
+  var td=new Date().toISOString().split('T')[0];
+  if(S.apiKey&&briefDate!==td&&!briefLoad)genBriefing();
+},1500);
+</script>
+</body>
+</html>
